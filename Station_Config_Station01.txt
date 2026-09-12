@@ -1,0 +1,4 @@
+StationID=Station01
+ScanFolder=PUT_YOUR_SCAN_FOLDER_HERE
+
+' Edit ScanFolder to the UNC or OneDrive path accessible by the station, e.g. \\\\SERVER\\Scans\\ or C:\Users\<user>\OneDrive\Scans\

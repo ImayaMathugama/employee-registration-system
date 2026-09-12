@@ -1,0 +1,2 @@
+StationID=Station03
+ScanFolder=PUT_YOUR_SCAN_FOLDER_HERE
