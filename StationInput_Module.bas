@@ -15,6 +15,9 @@ End Function
 
 Public Sub AppendScanToCSV(empNo As String)
     On Error GoTo ErrHandler
+    empNo = Trim(empNo)
+    If empNo = "" Then Exit Sub
+
     Dim folderPath As String
     folderPath = GetConfigValue("ScanFolder")
     If folderPath = "" Then folderPath = ThisWorkbook.Path & Application.PathSeparator
@@ -41,6 +44,7 @@ Public Sub AppendScanToCSV(empNo As String)
     On Error Resume Next
     Open fileName For Append As #fnum
     If Err.Number = 0 Then
+        If LOF(fnum) = 0 Then Print #fnum, "EMP_NO,ScanTime,StationID,ComputerName"
         Print #fnum, line
         Close #fnum
         success = True
@@ -53,6 +57,7 @@ Public Sub AppendScanToCSV(empNo As String)
         localFile = localFolder & stationID & "_pending.csv"
         fnum = FreeFile
         Open localFile For Append As #fnum
+        If LOF(fnum) = 0 Then Print #fnum, "EMP_NO,ScanTime,StationID,ComputerName"
         Print #fnum, line
         Close #fnum
         success = False
@@ -75,23 +80,58 @@ ErrHandler:
 End Sub
 
 Public Sub FlushPendingToServer()
-    On Error Resume Next
+    On Error GoTo ExitNow
     Dim folderPath As String
     folderPath = GetConfigValue("ScanFolder")
     If folderPath = "" Then folderPath = ThisWorkbook.Path & Application.PathSeparator
     If Right(folderPath, 1) <> "\" And Right(folderPath, 1) <> "/" Then folderPath = folderPath & "\"
+
+    Dim stationID As String
+    stationID = GetConfigValue("StationID")
+    If stationID = "" Then stationID = Environ("COMPUTERNAME")
+
+    Dim serverFile As String
+    serverFile = folderPath & stationID & "_log.csv"
+
     Dim localFolder As String
     localFolder = ThisWorkbook.Path & "\PendingScans\"
     If Dir(localFolder, vbDirectory) = "" Then Exit Sub
+
     Dim fso As Object: Set fso = CreateObject("Scripting.FileSystemObject")
     Dim f As Object
     For Each f In fso.GetFolder(localFolder).Files
-        Dim dest As String
-        dest = folderPath & f.Name
-        On Error Resume Next
-        f.Copy dest
-        If Err.Number = 0 Then
+        Dim inNum As Integer
+        Dim outNum As Integer
+        Dim rowText As String
+        Dim headerWritten As Boolean
+
+        inNum = FreeFile
+        Open f.Path For Input As #inNum
+
+        outNum = FreeFile
+        Open serverFile For Append As #outNum
+        If LOF(outNum) = 0 Then
+            Print #outNum, "EMP_NO,ScanTime,StationID,ComputerName"
+            headerWritten = True
+        End If
+
+        Do Until EOF(inNum)
+            Line Input #inNum, rowText
+            If Trim(rowText) <> "" Then
+                If LCase$(Trim$(rowText)) <> "emp_no,scantime,stationid,computername" Then
+                    Print #outNum, rowText
+                ElseIf Not headerWritten And LOF(outNum) = 0 Then
+                    Print #outNum, rowText
+                End If
+            End If
+        Loop
+
+        Close #inNum
+        Close #outNum
+
+        If Dir(serverFile) <> "" Then
             f.Delete True
         End If
     Next
+ExitNow:
 End Sub

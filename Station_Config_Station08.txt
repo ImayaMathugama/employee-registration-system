@@ -1,4 +1,4 @@
-StationID=Station01
+StationID=Station08
 ScanFolder=PUT_YOUR_SCAN_FOLDER_HERE
 
 ' Edit ScanFolder to a shared path accessible from all 12 stations, e.g. \\SERVER\Scans\ or a shared OneDrive/SharePoint sync folder.
