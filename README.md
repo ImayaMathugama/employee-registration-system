@@ -1,28 +1,51 @@
 # Employee Registration System
 
-This repository contains the code and assets to build the Excel-based employee registration system described in the issue. It includes VBA modules, Power Query M, and setup instructions so you can create the StationInput (.xlsm) workbooks and the Aggregator (.xlsm) workbook locally.
+This repository now includes a browser-based **HTML/CSS/JavaScript** employee registration system for barcode-based check-in.
 
-Important: Because this environment cannot generate binary Excel (.xlsm) files directly, the repository provides the ready-to-paste VBA modules, Power Query M, a sample MasterDB CSV and detailed instructions. Follow the instructions to paste the VBA into new macro-enabled workbooks (.xlsm) and configure them.
+## Quick start (HTML/CSS version)
 
-Files included:
-- StationInput_Module.bas          — VBA module for station workbook (append scans, flush pending)
-- frmScanner_code.frm             — UserForm code for scanner input
-- ThisWorkbook_code.bas           — Workbook_Open code to show the form and flush pending items
-- Station_Config_Station01.txt    — Config values for Station01 (placeholder ScanFolder)
-- Station_Config_Station02.txt    — Config values for Station02
-- Station_Config_Station03.txt    — Config values for Station03
-- Aggregator_PowerQuery_M.pq      — Power Query M script to combine station CSVs and merge with MasterDB
-- Aggregator_AutoRefresh.bas      — VBA module for Aggregator auto-refresh (30s)
-- MasterDB_sample.csv             — Sample master database rows you provided
-- Aggregator_Instructions.md      — Step-by-step to create Aggregator workbook and dashboard
-- Station_Instructions.md        — Step-by-step to create StationInput workbook(s)
+1. Open `/home/runner/work/employee-registration-system/employee-registration-system/index.html` in a browser.
+2. Load your master database CSV (or click **Load sample data**).
+3. Click **Apply master data**.
+4. Select the station (`Station01` ... `Station12`).
+5. Scan employee ID cards into the **Barcode / EMP_NO** field.
 
-Next steps (short):
-1. Download this repo.
-2. Create a new Excel Macro-Enabled Workbook for StationInput.xlsm; import the modules and UserForm code from the files in this repo, create Config sheet and save.
-3. Repeat for Station01..Station12 (or copy the template and edit the Config!StationID cell).
-4. Create Aggregator.xlsm, import Power Query M (From Folder -> Advanced Editor) and the AutoRefresh module, paste your full MasterDB into sheet MasterDB, and load the CombinedScans query to a Scans table. Configure ScanFolder placeholder.
+## Features
 
-If you want, I can also:
-- Create the 12 preconfigured .xlsm binaries and upload them for you (I can produce them and add them to the repo) — confirm and I will generate them next.
+- One scan input cell for barcode reader input
+- Real-time totals: total scans, unique employees, male, female
+- Flags for:
+  - employee not found / mismatch with master database
+  - inactive employees (using `Active` column)
+  - duplicate scans
+- Full scan log table with timestamp and station ID
+- CSV export of all scan records
+- Browser persistence (saved in local storage)
 
+## Master CSV format
+
+Required headers:
+
+- `EMP_NO`
+- `EMP_NAME`
+- `Gender`
+
+Optional header:
+
+- `Active` (`Active/Inactive`, `True/False`, `1/0`, etc.)
+
+Example:
+
+```csv
+EMP_NO,EMP_NAME,Gender,Active
+81017,J.K. Ranasinghe,Male,Active
+100013,K.P.G.U. K.P.G. Udaya Kumara,Female,Active
+```
+
+## Multi-station note
+
+This UI captures `StationID` per scan and works immediately for single-browser usage. For strict no-loss synchronization across 12 laptops, connect this front end to a shared central backend/database API so all stations write to the same source of truth.
+
+---
+
+Legacy Excel/VBA assets are still included in the repository (`*.bas`, `*.frm`, Power Query and setup docs) if you need the original workbook workflow.

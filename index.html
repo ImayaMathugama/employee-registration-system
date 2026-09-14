@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Registration System</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Employee Registration System</h1>
+      <p>Barcode-based registration with live counts and validation flags.</p>
+    </header>
+
+    <section class="card">
+      <h2>Master Database</h2>
+      <div class="row gap">
+        <input type="file" id="masterFile" accept=".csv,text/csv" />
+        <button id="loadSampleBtn" type="button">Load sample data</button>
+        <button id="applyMasterBtn" type="button" class="primary">Apply master data</button>
+      </div>
+      <textarea id="masterCsv" rows="8" spellcheck="false"></textarea>
+      <small>Expected headers: <strong>EMP_NO, EMP_NAME, Gender, Active</strong> (Active optional).</small>
+      <p id="masterStatus" class="status"></p>
+    </section>
+
+    <section class="card">
+      <h2>Scan Input</h2>
+      <form id="scanForm" class="grid">
+        <label>
+          Station
+          <select id="stationId">
+            <option>Station01</option><option>Station02</option><option>Station03</option><option>Station04</option>
+            <option>Station05</option><option>Station06</option><option>Station07</option><option>Station08</option>
+            <option>Station09</option><option>Station10</option><option>Station11</option><option>Station12</option>
+          </select>
+        </label>
+        <label>
+          Barcode / EMP_NO
+          <input id="scanInput" autocomplete="off" autofocus required />
+        </label>
+        <label>
+          Card Name (optional)
+          <input id="cardName" autocomplete="off" />
+        </label>
+        <label>
+          Card Gender (optional)
+          <select id="cardGender">
+            <option value="">-</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </label>
+        <button class="primary" type="submit">Register scan</button>
+      </form>
+      <p id="scanStatus" class="status"></p>
+    </section>
+
+    <section class="stats">
+      <article><span>Total scans</span><strong id="totalScans">0</strong></article>
+      <article><span>Unique employees</span><strong id="uniqueScans">0</strong></article>
+      <article><span>Male</span><strong id="maleCount">0</strong></article>
+      <article><span>Female</span><strong id="femaleCount">0</strong></article>
+      <article><span>Mismatches / Not found</span><strong id="mismatchCount">0</strong></article>
+      <article><span>Inactive</span><strong id="inactiveCount">0</strong></article>
+      <article><span>Duplicates</span><strong id="duplicateCount">0</strong></article>
+    </section>
+
+    <section class="card">
+      <div class="row between">
+        <h2>Scan Records</h2>
+        <div class="row gap">
+          <button id="exportBtn" type="button">Export CSV</button>
+          <button id="clearBtn" type="button" class="danger">Clear all</button>
+        </div>
+      </div>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>EMP_NO</th>
+              <th>Employee Name</th>
+              <th>Gender</th>
+              <th>Station</th>
+              <th>Scan Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
